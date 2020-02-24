@@ -78,7 +78,7 @@ class Portfolio:
             # print('beta: ' + str(beta)) 
             self.alphas.append(alpha) # stored as part of the object
             self.betas.append(beta)
-            return self.betas
+            return self.alphas, self.betas
             
     def linreg(self,x,y): 
         x = sm.add_constant(x) 
@@ -144,14 +144,23 @@ class Portfolio:
 
 def index(request):
     pets = Portfolio({"PETS":"2018-10-10"})
-    petzx = Portfolio({"PETZX":"2018-10-10"})
-    answer = [pets.beta(), petzx.beta()]
+    # petzx = Portfolio({"PETZX":"2018-10-10"})
+    output = pets.beta()
+    alpha =  str(output[0])
+    beta = str(output[1])
     pets.fourier()
-    answer.concat([pets.basecase],[pets.eleslow])
-    # petzx.fourier()
-    # apple.basecase
-
-    return HttpResponse(answer)
+    basecase = str(pets.basecase)
+    eleslow = str(pets.eleslow.tolist())
+    # listToStr = ' '.join([str(elem) for elem in s]) 
+    data = {
+        "PETS": {
+            "alpha": alpha,
+            "beta": beta,
+            "basecase": basecase,
+            "eleslow": eleslow,
+        }
+    }
+    return HttpResponse(json.dumps(data))
 
 # Merck & Co. (MRK)
 # CVS Health (CVS)
